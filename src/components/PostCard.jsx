@@ -1,0 +1,71 @@
+import { ArrowUp, MessageSquare, ExternalLink, Play } from 'lucide-react'
+import { Link } from 'react-router-dom'
+
+export default function PostCard({ post, onUpvote }) {
+  const hasVideo = Boolean(post.video_url)
+
+  return (
+    <article className="card flex gap-0 overflow-hidden hover:border-zinc-700 transition-colors">
+      {/* Vote column */}
+      <div className="flex flex-col items-center gap-1.5 px-3 py-4 bg-zinc-950/40 min-w-[56px]">
+        <button
+          className="vote-btn group flex flex-col items-center gap-1"
+          onClick={() => onUpvote(post.id)}
+          aria-label="Upvote"
+        >
+          <ArrowUp size={18} className="group-hover:text-orange-400 transition-colors" />
+        </button>
+        <span className="text-sm font-bold tabular-nums text-zinc-300">{post.upvotes}</span>
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 p-4 min-w-0">
+        <div className="flex items-start gap-3">
+          {/* Video thumbnail placeholder */}
+          {hasVideo && (
+            <div className="shrink-0 w-20 h-14 rounded bg-zinc-800 flex items-center justify-center border border-zinc-700">
+              <Play size={16} className="text-zinc-400" />
+            </div>
+          )}
+
+          <div className="flex-1 min-w-0">
+            <Link to={`/post/${post.id}`} className="block">
+              <h2 className="text-sm font-semibold text-zinc-100 leading-snug hover:text-orange-300 transition-colors line-clamp-2">
+                {post.title}
+              </h2>
+            </Link>
+
+            <p className="mt-1 text-xs text-zinc-400 leading-relaxed line-clamp-2">
+              {post.description}
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-3 flex items-center gap-4 text-xs text-zinc-500">
+          <span>{new Date(post.created_at).toLocaleDateString()}</span>
+
+          <Link
+            to={`/post/${post.id}`}
+            className="flex items-center gap-1 hover:text-zinc-300 transition-colors"
+          >
+            <MessageSquare size={12} />
+            Comments
+          </Link>
+
+          {post.affiliate_link && (
+            <a
+              href={post.affiliate_link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-orange-400/70 hover:text-orange-400 transition-colors ml-auto"
+              onClick={e => e.stopPropagation()}
+            >
+              <ExternalLink size={12} />
+              Affiliate Link
+            </a>
+          )}
+        </div>
+      </div>
+    </article>
+  )
+}
