@@ -1,10 +1,12 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { ArrowLeft, AlertCircle } from 'lucide-react'
+import { ArrowLeft, AlertCircle, Lock } from 'lucide-react'
 import { usePosts } from '../hooks/usePosts'
+import { useAuth } from '../context/AuthContext'
 
 export default function Submit() {
   const { createPost } = usePosts()
+  const { user, setShowAuthModal } = useAuth()
   const navigate = useNavigate()
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(null)
@@ -14,6 +16,11 @@ export default function Submit() {
     video_url: '',
     affiliate_link: '',
   })
+
+  // Redirect to auth modal if not logged in
+  useEffect(() => {
+    if (!user) setShowAuthModal(true)
+  }, [user, setShowAuthModal])
 
   function set(key, val) {
     setForm(prev => ({ ...prev, [key]: val }))
@@ -34,6 +41,18 @@ export default function Submit() {
   }
 
   const valid = form.title.trim() && form.description.trim()
+
+  if (!user) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-16 text-center">
+        <Lock size={32} className="text-zinc-600 mx-auto mb-4" />
+        <p className="text-zinc-400 text-sm mb-4">You need to sign in to submit a review.</p>
+        <button onClick={() => setShowAuthModal(true)} className="btn-primary">
+          Sign In
+        </button>
+      </div>
+    )
+  }
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6">

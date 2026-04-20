@@ -1,18 +1,34 @@
 import { supabase } from './supabase'
 
-export async function fetchTopPosts() {
+export async function fetchTopPosts(userId = null) {
   const { data, error } = await supabase
     .from('posts')
-    .select('*')
+    .select('*, comment_count:comments(count)')
     .order('upvotes', { ascending: false })
 
   if (error) throw error
-  return data
+
+  // Fetch which posts this user has voted on
+  let votedIds = new Set()
+  if (userId) {
+    const { data: votes } = await supabase
+      .from('votes')
+      .select('post_id')
+      .eq('user_id', userId)
+    if (votes) votedIds = new Set(votes.map(v => v.post_id))
+  }
+
+  return data.map(p => ({
+    ...p,
+    comment_count: p.comment_count?.[0]?.count ?? 0,
+    user_voted: votedIds.has(p.id),
+  }))
 }
 
-export async function upvotePost(postId) {
-  const { error } = await supabase.rpc('increment_upvotes', { post_id: postId })
+export async function toggleUpvote(postId) {
+  const { data, error } = await supabase.rpc('toggle_upvote', { p_post_id: postId })
   if (error) throw error
+  return data // { upvotes: number, voted: boolean }
 }
 
 export async function createPost(data) {

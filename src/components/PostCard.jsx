@@ -9,19 +9,23 @@ export default function PostCard({ post, onUpvote }) {
       {/* Vote column */}
       <div className="flex flex-col items-center gap-1.5 px-3 py-4 bg-zinc-950/40 min-w-[56px]">
         <button
-          className="vote-btn group flex flex-col items-center gap-1"
+          className={`vote-btn group flex flex-col items-center gap-1 ${post.user_voted ? 'vote-btn-active' : ''}`}
           onClick={() => onUpvote(post.id)}
           aria-label="Upvote"
         >
-          <ArrowUp size={18} className="group-hover:text-orange-400 transition-colors" />
+          <ArrowUp
+            size={18}
+            className={post.user_voted ? 'text-orange-400' : 'group-hover:text-orange-400 transition-colors'}
+          />
         </button>
-        <span className="text-sm font-bold tabular-nums text-zinc-300">{post.upvotes}</span>
+        <span className={`text-sm font-bold tabular-nums ${post.user_voted ? 'text-orange-400' : 'text-zinc-300'}`}>
+          {post.upvotes}
+        </span>
       </div>
 
       {/* Content */}
       <div className="flex-1 p-4 min-w-0">
         <div className="flex items-start gap-3">
-          {/* Video thumbnail placeholder */}
           {hasVideo && (
             <div className="shrink-0 w-20 h-14 rounded bg-zinc-800 flex items-center justify-center border border-zinc-700">
               <Play size={16} className="text-zinc-400" />
@@ -49,7 +53,7 @@ export default function PostCard({ post, onUpvote }) {
             className="flex items-center gap-1 hover:text-zinc-300 transition-colors"
           >
             <MessageSquare size={12} />
-            Comments
+            {post.comment_count > 0 ? post.comment_count : 'No'} {post.comment_count === 1 ? 'comment' : 'comments'}
           </Link>
 
           {post.affiliate_link && (
