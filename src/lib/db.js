@@ -1,14 +1,18 @@
 import { supabase } from './supabase'
 
-export async function fetchTopPosts(userId = null) {
-  const { data, error } = await supabase
+export async function fetchTopPosts(userId = null, category = null) {
+  let query = supabase
     .from('posts')
     .select('*, comment_count:comments(count)')
     .order('upvotes', { ascending: false })
 
+  if (category && category !== 'all') {
+    query = query.eq('category', category)
+  }
+
+  const { data, error } = await query
   if (error) throw error
 
-  // Fetch which posts this user has voted on
   let votedIds = new Set()
   if (userId) {
     const { data: votes } = await supabase
@@ -28,7 +32,7 @@ export async function fetchTopPosts(userId = null) {
 export async function toggleUpvote(postId) {
   const { data, error } = await supabase.rpc('toggle_upvote', { p_post_id: postId })
   if (error) throw error
-  return data // { upvotes: number, voted: boolean }
+  return data
 }
 
 export async function createPost(data) {
@@ -39,6 +43,7 @@ export async function createPost(data) {
       description: data.description,
       video_url: data.video_url || null,
       affiliate_link: data.affiliate_link || null,
+      category: data.category || 'general',
     })
     .select()
     .single()

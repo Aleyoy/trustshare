@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { ArrowLeft, AlertCircle, Lock } from 'lucide-react'
 import { usePosts } from '../hooks/usePosts'
 import { useAuth } from '../context/AuthContext'
+import { CATEGORIES } from '../data/categories'
 
 export default function Submit() {
   const { createPost } = usePosts()
@@ -15,6 +16,7 @@ export default function Submit() {
     description: '',
     video_url: '',
     affiliate_link: '',
+    category: 'general',
   })
 
   // Redirect to auth modal if not logged in
@@ -92,6 +94,21 @@ export default function Submit() {
             rows={5}
             className="w-full bg-zinc-950 border border-zinc-800 rounded-md px-3 py-2 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-zinc-600 resize-none transition-colors"
           />
+        </div>
+
+        <div>
+          <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">
+            Category
+          </label>
+          <select
+            value={form.category}
+            onChange={e => set('category', e.target.value)}
+            className="w-full bg-zinc-950 border border-zinc-800 rounded-md px-3 py-2 text-sm text-zinc-100 focus:outline-none focus:border-zinc-600 transition-colors"
+          >
+            {CATEGORIES.filter(c => c.id !== 'all').map(c => (
+              <option key={c.id} value={c.id}>{c.emoji} {c.label}</option>
+            ))}
+          </select>
         </div>
 
         <div>

@@ -1,8 +1,10 @@
 import { ArrowUp, MessageSquare, ExternalLink, Play } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { CATEGORIES } from '../data/categories'
 
 export default function PostCard({ post, onUpvote }) {
   const hasVideo = Boolean(post.video_url)
+  const category = CATEGORIES.find(c => c.id === post.category)
 
   return (
     <article className="card flex gap-0 overflow-hidden hover:border-zinc-700 transition-colors">
@@ -33,12 +35,16 @@ export default function PostCard({ post, onUpvote }) {
           )}
 
           <div className="flex-1 min-w-0">
+            {category && category.id !== 'all' && (
+              <span className="inline-flex items-center gap-1 text-[10px] font-medium text-zinc-500 mb-1">
+                {category.emoji} {category.label}
+              </span>
+            )}
             <Link to={`/post/${post.id}`} className="block">
               <h2 className="text-sm font-semibold text-zinc-100 leading-snug hover:text-orange-300 transition-colors line-clamp-2">
                 {post.title}
               </h2>
             </Link>
-
             <p className="mt-1 text-xs text-zinc-400 leading-relaxed line-clamp-2">
               {post.description}
             </p>

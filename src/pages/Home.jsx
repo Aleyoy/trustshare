@@ -1,8 +1,9 @@
 import { useState, useMemo } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
-import { RefreshCw, PlusCircle, AlertCircle } from 'lucide-react'
+import { RefreshCw, PlusCircle, AlertCircle, Sparkles } from 'lucide-react'
 import PostCard from '../components/PostCard'
 import FeedSkeleton from '../components/FeedSkeleton'
+import CategoryFilter from '../components/CategoryFilter'
 import { usePosts } from '../hooks/usePosts'
 
 const SORT_OPTIONS = [
@@ -11,10 +12,12 @@ const SORT_OPTIONS = [
 ]
 
 export default function Home() {
-  const { posts, loading, error, upvotePost, reload } = usePosts()
   const [sort, setSort] = useState('top')
+  const [category, setCategory] = useState('all')
   const [searchParams] = useSearchParams()
   const searchQuery = searchParams.get('search') || ''
+
+  const { posts, loading, error, newCount, upvotePost, reload } = usePosts(category)
 
   const filtered = useMemo(() => {
     let result = posts
@@ -36,6 +39,9 @@ export default function Home() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-6">
+      {/* Category filter */}
+      <CategoryFilter active={category} onChange={setCategory} />
+
       {/* Feed header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-1 bg-zinc-900 border border-zinc-800 rounded-md p-1">
@@ -70,6 +76,17 @@ export default function Home() {
         </div>
       </div>
 
+      {/* New posts banner */}
+      {newCount > 0 && (
+        <button
+          onClick={reload}
+          className="w-full mb-4 flex items-center justify-center gap-2 bg-orange-500/10 border border-orange-500/30 text-orange-400 text-sm font-medium rounded-lg py-2.5 hover:bg-orange-500/20 transition-colors"
+        >
+          <Sparkles size={14} />
+          {newCount} new {newCount === 1 ? 'post' : 'posts'} — click to refresh
+        </button>
+      )}
+
       {/* Search context */}
       {searchQuery && (
         <p className="text-sm text-zinc-400 mb-4">
@@ -77,7 +94,7 @@ export default function Home() {
         </p>
       )}
 
-      {/* States */}
+      {/* Error */}
       {error && (
         <div className="card p-4 flex items-center gap-3 text-sm text-red-400 border-red-900/50 mb-4">
           <AlertCircle size={16} />
@@ -90,7 +107,7 @@ export default function Home() {
         <FeedSkeleton />
       ) : filtered.length === 0 ? (
         <div className="card p-16 text-center">
-          <p className="text-zinc-400 text-sm">No posts yet.</p>
+          <p className="text-zinc-400 text-sm">No posts yet in this category.</p>
           <Link to="/submit" className="btn-primary inline-flex mt-4">Be the first to post</Link>
         </div>
       ) : (

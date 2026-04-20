@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
+import { ToastProvider } from './context/ToastContext'
 import AuthModal from './components/AuthModal'
 import Navbar from './components/Navbar'
 import Home from './pages/Home'
@@ -26,7 +27,9 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <AppInner />
+        <ToastProvider>
+          <AppInner />
+        </ToastProvider>
       </AuthProvider>
     </BrowserRouter>
   )
