@@ -3,7 +3,7 @@ import { supabase } from './supabase'
 export async function fetchTopPosts(userId = null, category = null) {
   let query = supabase
     .from('posts')
-    .select('*, comment_count:comments(count), author:profiles(id, username, is_verified)')
+    .select('*, comment_count:comments(count)')
     .order('upvotes', { ascending: false })
 
   if (category && category !== 'all') {
