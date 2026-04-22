@@ -22,10 +22,22 @@ export async function fetchTopPosts(userId = null, category = null) {
     if (votes) votedIds = new Set(votes.map(v => v.post_id))
   }
 
+  // Fetch profiles for post authors separately (avoids FK requirement)
+  const authorIds = [...new Set(data.map(p => p.user_id).filter(Boolean))]
+  let profileMap = {}
+  if (authorIds.length > 0) {
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('id, username, is_verified')
+      .in('id', authorIds)
+    if (profiles) profileMap = Object.fromEntries(profiles.map(p => [p.id, p]))
+  }
+
   return data.map(p => ({
     ...p,
     comment_count: p.comment_count?.[0]?.count ?? 0,
     user_voted: votedIds.has(p.id),
+    author: p.user_id ? profileMap[p.user_id] ?? null : null,
   }))
 }
 

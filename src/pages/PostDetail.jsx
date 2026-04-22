@@ -1,10 +1,52 @@
 import { useParams, Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
-import { ArrowUp, ArrowLeft, ExternalLink, MessageSquare, AlertCircle, Play, MousePointerClick } from 'lucide-react'
+import { ArrowUp, ArrowLeft, ExternalLink, MessageSquare, AlertCircle, MousePointerClick, BadgeCheck } from 'lucide-react'
 import { useState } from 'react'
 import { usePosts } from '../hooks/usePosts'
 import { useComments } from '../hooks/useComments'
 import { CATEGORIES } from '../data/categories'
+
+function getYouTubeId(url) {
+  try {
+    const u = new URL(url)
+    if (u.hostname.includes('youtu.be')) return u.pathname.slice(1)
+    if (u.hostname.includes('youtube.com')) return u.searchParams.get('v')
+  } catch {}
+  return null
+}
+
+function VideoEmbed({ url }) {
+  const ytId = getYouTubeId(url)
+  if (ytId) {
+    return (
+      <div className="mb-4 rounded-lg overflow-hidden border border-zinc-800 aspect-video">
+        <iframe
+          src={`https://www.youtube.com/embed/${ytId}`}
+          title="Video"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          className="w-full h-full"
+        />
+      </div>
+    )
+  }
+  const isDirectVideo = /\.(mp4|webm|ogg)(\?|$)/i.test(url)
+  if (isDirectVideo) {
+    return (
+      <div className="mb-4 rounded-lg overflow-hidden border border-zinc-800">
+        <video controls className="w-full" src={url} />
+      </div>
+    )
+  }
+  return (
+    <div className="mb-4 rounded-lg overflow-hidden border border-zinc-800 bg-zinc-950 aspect-video flex items-center justify-center">
+      <a href={url} target="_blank" rel="noopener noreferrer"
+        className="flex flex-col items-center gap-2 text-zinc-400 hover:text-zinc-200 transition-colors text-xs">
+        Watch video ↗
+      </a>
+    </div>
+  )
+}
 
 export default function PostDetail() {
   const { id } = useParams()
@@ -93,21 +135,19 @@ export default function PostDetail() {
                 </span>
               )}
 
-              <h1 className="text-lg font-semibold text-zinc-100 leading-snug mb-3">{post.title}</h1>
+              <h1 className="text-lg font-semibold text-zinc-100 leading-snug mb-1">{post.title}</h1>
 
-              {post.video_url && (
-                <div className="mb-4 rounded-lg overflow-hidden border border-zinc-800 bg-zinc-950 aspect-video flex items-center justify-center">
-                  <a
-                    href={post.video_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex flex-col items-center gap-2 text-zinc-400 hover:text-zinc-200 transition-colors"
-                  >
-                    <Play size={36} />
-                    <span className="text-xs">Watch video</span>
-                  </a>
-                </div>
+              {post.author && (
+                <Link
+                  to={`/profile/${post.author.id}`}
+                  className="inline-flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-300 transition-colors mb-3"
+                >
+                  by {post.author.username ?? 'anon'}
+                  {post.author.is_verified && <BadgeCheck size={11} className="text-orange-400" />}
+                </Link>
               )}
+
+              {post.video_url && <VideoEmbed url={post.video_url} />}
 
               <p className="text-sm text-zinc-300 leading-relaxed mb-4">{post.description}</p>
 
