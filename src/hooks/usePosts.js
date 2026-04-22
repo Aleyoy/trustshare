@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { fetchTopPosts, toggleUpvote, createPost as dbCreatePost } from '../lib/db'
+import { fetchTopPosts, toggleUpvote, trackClick as dbTrackClick, createPost as dbCreatePost } from '../lib/db'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
@@ -69,12 +69,18 @@ export function usePosts(category = 'all') {
     }
   }
 
+  function trackClick(postId) {
+    // Optimistic click count increment
+    setPosts(prev => prev.map(p => p.id === postId ? { ...p, clicks: (p.clicks ?? 0) + 1 } : p))
+    dbTrackClick(postId)
+  }
+
   async function createPost(data) {
     const post = await dbCreatePost(data)
-    setPosts(prev => [{ ...post, comment_count: 0, user_voted: false }, ...prev])
+    setPosts(prev => [{ ...post, comment_count: 0, user_voted: false, clicks: 0 }, ...prev])
     addToast('Post submitted!', 'success')
     return post
   }
 
-  return { posts, loading, error, newCount, upvotePost, createPost, reload: load }
+  return { posts, loading, error, newCount, upvotePost, trackClick, createPost, reload: load }
 }

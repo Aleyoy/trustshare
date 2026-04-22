@@ -29,10 +29,29 @@ export async function fetchTopPosts(userId = null, category = null) {
   }))
 }
 
+export async function fetchPostById(id) {
+  const { data, error } = await supabase
+    .from('posts')
+    .select('*, comment_count:comments(count)')
+    .eq('id', id)
+    .single()
+
+  if (error) throw error
+  return {
+    ...data,
+    comment_count: data.comment_count?.[0]?.count ?? 0,
+  }
+}
+
 export async function toggleUpvote(postId) {
   const { data, error } = await supabase.rpc('toggle_upvote', { p_post_id: postId })
   if (error) throw error
   return data
+}
+
+export async function trackClick(postId) {
+  // fire-and-forget, don't block navigation
+  supabase.rpc('track_click', { p_post_id: postId }).then()
 }
 
 export async function createPost(data) {

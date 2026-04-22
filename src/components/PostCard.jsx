@@ -1,8 +1,8 @@
-import { ArrowUp, MessageSquare, ExternalLink, Play } from 'lucide-react'
+import { ArrowUp, MessageSquare, ExternalLink, Play, MousePointerClick } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { CATEGORIES } from '../data/categories'
 
-export default function PostCard({ post, onUpvote }) {
+export default function PostCard({ post, onUpvote, onClickAffiliate }) {
   const hasVideo = Boolean(post.video_url)
   const category = CATEGORIES.find(c => c.id === post.category)
 
@@ -51,7 +51,7 @@ export default function PostCard({ post, onUpvote }) {
           </div>
         </div>
 
-        <div className="mt-3 flex items-center gap-4 text-xs text-zinc-500">
+        <div className="mt-3 flex items-center gap-4 text-xs text-zinc-500 flex-wrap">
           <span>{new Date(post.created_at).toLocaleDateString()}</span>
 
           <Link
@@ -62,13 +62,20 @@ export default function PostCard({ post, onUpvote }) {
             {post.comment_count > 0 ? post.comment_count : 'No'} {post.comment_count === 1 ? 'comment' : 'comments'}
           </Link>
 
+          {post.clicks > 0 && (
+            <span className="flex items-center gap-1 text-zinc-600">
+              <MousePointerClick size={12} />
+              {post.clicks} {post.clicks === 1 ? 'click' : 'clicks'}
+            </span>
+          )}
+
           {post.affiliate_link && (
             <a
               href={post.affiliate_link}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => onClickAffiliate?.(post.id)}
               className="flex items-center gap-1 text-orange-400/70 hover:text-orange-400 transition-colors ml-auto"
-              onClick={e => e.stopPropagation()}
             >
               <ExternalLink size={12} />
               Affiliate Link
