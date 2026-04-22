@@ -67,6 +67,7 @@ export async function trackClick(postId) {
 }
 
 export async function createPost(data) {
+  const { data: { user } } = await supabase.auth.getUser()
   const { data: post, error } = await supabase
     .from('posts')
     .insert({
@@ -75,6 +76,7 @@ export async function createPost(data) {
       video_url: data.video_url || null,
       affiliate_link: data.affiliate_link || null,
       category: data.category || 'general',
+      user_id: user?.id ?? null,
     })
     .select()
     .single()

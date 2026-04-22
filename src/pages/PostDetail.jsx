@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { usePosts } from '../hooks/usePosts'
 import { useComments } from '../hooks/useComments'
 import { CATEGORIES } from '../data/categories'
+import { timeAgo } from '../lib/timeAgo'
 
 function getYouTubeId(url) {
   try {
@@ -172,8 +173,11 @@ export default function PostDetail() {
                   </span>
                 )}
 
-                <span className="text-xs text-zinc-500 ml-auto">
-                  {new Date(post.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                <span
+                  className="text-xs text-zinc-500 ml-auto"
+                  title={new Date(post.created_at).toLocaleString()}
+                >
+                  {timeAgo(post.created_at)}
                 </span>
               </div>
             </div>

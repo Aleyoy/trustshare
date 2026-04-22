@@ -1,6 +1,7 @@
 import { ArrowUp, MessageSquare, ExternalLink, Play, MousePointerClick, BadgeCheck } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { CATEGORIES } from '../data/categories'
+import { timeAgo } from '../lib/timeAgo'
 
 export default function PostCard({ post, onUpvote, onClickAffiliate }) {
   const hasVideo = Boolean(post.video_url)
@@ -60,9 +61,8 @@ export default function PostCard({ post, onUpvote, onClickAffiliate }) {
               {post.author.username ?? 'anon'}
               {post.author.is_verified && <BadgeCheck size={11} className="text-orange-400" />}
             </Link>
-          ) : (
-            <span>{new Date(post.created_at).toLocaleDateString()}</span>
-          )}
+          ) : null}
+          <span title={new Date(post.created_at).toLocaleString()}>{timeAgo(post.created_at)}</span>
 
           <Link
             to={`/post/${post.id}`}
