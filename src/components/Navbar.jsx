@@ -45,9 +45,13 @@ export default function Navbar() {
               </Link>
 
               <div className="flex items-center gap-2 pl-2 border-l border-zinc-800">
-                <div className="w-7 h-7 rounded-full bg-orange-500/20 border border-orange-500/40 flex items-center justify-center">
+                <Link
+                  to={`/profile/${user.id}`}
+                  className="w-7 h-7 rounded-full bg-orange-500/20 border border-orange-500/40 flex items-center justify-center hover:border-orange-400 transition-colors"
+                  title="View profile"
+                >
                   <span className="text-xs font-bold text-orange-400">{avatarLetter}</span>
-                </div>
+                </Link>
                 <button
                   onClick={signOut}
                   className="vote-btn p-1.5"

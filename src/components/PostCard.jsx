@@ -1,4 +1,4 @@
-import { ArrowUp, MessageSquare, ExternalLink, Play, MousePointerClick } from 'lucide-react'
+import { ArrowUp, MessageSquare, ExternalLink, Play, MousePointerClick, BadgeCheck } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { CATEGORIES } from '../data/categories'
 
@@ -52,7 +52,17 @@ export default function PostCard({ post, onUpvote, onClickAffiliate }) {
         </div>
 
         <div className="mt-3 flex items-center gap-4 text-xs text-zinc-500 flex-wrap">
-          <span>{new Date(post.created_at).toLocaleDateString()}</span>
+          {post.author ? (
+            <Link
+              to={`/profile/${post.author.id}`}
+              className="flex items-center gap-1 hover:text-zinc-300 transition-colors"
+            >
+              {post.author.username ?? 'anon'}
+              {post.author.is_verified && <BadgeCheck size={11} className="text-orange-400" />}
+            </Link>
+          ) : (
+            <span>{new Date(post.created_at).toLocaleDateString()}</span>
+          )}
 
           <Link
             to={`/post/${post.id}`}

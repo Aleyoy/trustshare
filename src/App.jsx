@@ -7,6 +7,7 @@ import Navbar from './components/Navbar'
 import Home from './pages/Home'
 import PostDetail from './pages/PostDetail'
 import Submit from './pages/Submit'
+import Profile from './pages/Profile'
 
 function AppInner() {
   const { showAuthModal } = useAuth()
@@ -18,6 +19,7 @@ function AppInner() {
         <Route path="/" element={<Home />} />
         <Route path="/post/:id" element={<PostDetail />} />
         <Route path="/submit" element={<Submit />} />
+        <Route path="/profile/:userId" element={<Profile />} />
       </Routes>
       {showAuthModal && <AuthModal />}
     </div>

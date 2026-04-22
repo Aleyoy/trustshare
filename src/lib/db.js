@@ -3,7 +3,7 @@ import { supabase } from './supabase'
 export async function fetchTopPosts(userId = null, category = null) {
   let query = supabase
     .from('posts')
-    .select('*, comment_count:comments(count)')
+    .select('*, comment_count:comments(count), author:profiles(id, username, is_verified)')
     .order('upvotes', { ascending: false })
 
   if (category && category !== 'all') {
@@ -91,4 +91,57 @@ export async function createComment(postId, content) {
 
   if (error) throw error
   return data
+}
+
+export async function fetchProfile(userId) {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', userId)
+    .single()
+  if (error) throw error
+  return data
+}
+
+export async function fetchUserPosts(userId) {
+  const { data, error } = await supabase
+    .from('posts')
+    .select('*, comment_count:comments(count)')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+  if (error) throw error
+  return data.map(p => ({
+    ...p,
+    comment_count: p.comment_count?.[0]?.count ?? 0,
+  }))
+}
+
+export async function updateProfile({ username, bio }) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+  const { data, error } = await supabase
+    .from('profiles')
+    .upsert({ id: user.id, username, bio })
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
+export async function fetchPostsWithAuthors(category = null) {
+  let query = supabase
+    .from('posts')
+    .select('*, comment_count:comments(count), author:profiles(username, is_verified)')
+    .order('upvotes', { ascending: false })
+
+  if (category && category !== 'all') {
+    query = query.eq('category', category)
+  }
+
+  const { data, error } = await query
+  if (error) throw error
+  return data.map(p => ({
+    ...p,
+    comment_count: p.comment_count?.[0]?.count ?? 0,
+  }))
 }
