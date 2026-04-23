@@ -13,7 +13,7 @@ function AppInner() {
   const { showAuthModal } = useAuth()
 
   return (
-    <div className="min-h-screen bg-zinc-950">
+    <div className="min-h-screen bg-[#F4F3FE]">
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />

@@ -75,10 +75,10 @@ export default function Profile() {
     return (
       <div className="max-w-3xl mx-auto px-4 py-6">
         <div className="animate-pulse space-y-4">
-          <div className="h-24 bg-zinc-900 rounded-xl" />
-          <div className="h-8 bg-zinc-900 rounded w-1/3" />
+          <div className="h-24 bg-white rounded-xl border border-purple-100" />
+          <div className="h-8 bg-white rounded-xl border border-purple-100 w-1/3" />
           <div className="space-y-3">
-            {[1, 2, 3].map(i => <div key={i} className="h-24 bg-zinc-900 rounded-xl" />)}
+            {[1, 2, 3].map(i => <div key={i} className="h-24 bg-white rounded-xl border border-purple-100" />)}
           </div>
         </div>
       </div>
@@ -88,9 +88,9 @@ export default function Profile() {
   if (error || !profile) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-16 text-center">
-        <p className="text-zinc-400 text-sm">Profile not found.</p>
+        <p className="text-slate-400 text-sm">Profil tidak ditemukan.</p>
         <Link to="/" className="btn-ghost mt-4 inline-flex items-center gap-2">
-          <ArrowLeft size={14} /> Back
+          <ArrowLeft size={14} /> Kembali
         </Link>
       </div>
     )
@@ -107,73 +107,54 @@ export default function Profile() {
       </Helmet>
 
       <div className="max-w-3xl mx-auto px-4 py-6">
-        <Link to="/" className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-zinc-100 transition-colors mb-6">
+        <Link to="/" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-[#3C3489] transition-colors mb-6">
           <ArrowLeft size={14} />
-          Back to feed
+          Kembali ke feed
         </Link>
 
         {/* Profile card */}
         <div className="card p-6 mb-6">
           <div className="flex items-start gap-4">
-            <div className="w-14 h-14 rounded-full bg-orange-500/20 border border-orange-500/40 flex items-center justify-center shrink-0">
-              <span className="text-xl font-bold text-orange-400">{avatarLetter}</span>
+            <div className="w-14 h-14 rounded-full bg-[#3C3489] flex items-center justify-center shrink-0">
+              <span className="text-xl font-bold text-amber-400">{avatarLetter}</span>
             </div>
 
             <div className="flex-1 min-w-0">
               {editing ? (
                 <div className="space-y-2">
-                  <input
-                    type="text"
-                    value={editUsername}
-                    onChange={e => setEditUsername(e.target.value)}
-                    placeholder="Username"
-                    maxLength={32}
-                    className="w-full bg-zinc-950 border border-zinc-700 rounded-md px-3 py-1.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-zinc-500 transition-colors"
-                  />
-                  <textarea
-                    value={editBio}
-                    onChange={e => setEditBio(e.target.value)}
-                    placeholder="Short bio (optional)"
-                    rows={2}
-                    maxLength={200}
-                    className="w-full bg-zinc-950 border border-zinc-700 rounded-md px-3 py-1.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-zinc-500 resize-none transition-colors"
-                  />
+                  <input type="text" value={editUsername} onChange={e => setEditUsername(e.target.value)}
+                    placeholder="Username" maxLength={32} className="input" />
+                  <textarea value={editBio} onChange={e => setEditBio(e.target.value)}
+                    placeholder="Bio singkat (opsional)" rows={2} maxLength={200} className="input resize-none" />
                   <div className="flex items-center gap-2">
-                    <button
-                      onClick={handleSave}
-                      disabled={saving || !editUsername.trim()}
-                      className="btn-primary flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
-                    >
+                    <button onClick={handleSave} disabled={saving || !editUsername.trim()}
+                      className="btn-primary flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed">
                       <Check size={13} />
-                      {saving ? 'Saving…' : 'Save'}
+                      {saving ? 'Menyimpan…' : 'Simpan'}
                     </button>
                     <button onClick={handleCancel} className="btn-ghost flex items-center gap-1.5">
                       <X size={13} />
-                      Cancel
+                      Batal
                     </button>
                   </div>
                 </div>
               ) : (
                 <>
                   <div className="flex items-center gap-2 mb-1">
-                    <h1 className="text-base font-bold text-zinc-100">{displayName}</h1>
+                    <h1 className="text-base font-bold text-[#1E1B4B]">{displayName}</h1>
                     {profile.is_verified && (
-                      <BadgeCheck size={16} className="text-orange-400 shrink-0" title="Verified affiliator" />
+                      <BadgeCheck size={16} className="text-amber-500 shrink-0" title="Affiliator terverifikasi" />
                     )}
                     {isOwn && (
-                      <button
-                        onClick={() => setEditing(true)}
-                        className="ml-1 text-zinc-500 hover:text-zinc-300 transition-colors"
-                        title="Edit profile"
-                      >
+                      <button onClick={() => setEditing(true)} className="ml-1 text-slate-400 hover:text-[#3C3489] transition-colors" title="Edit profil">
                         <Pencil size={13} />
                       </button>
                     )}
                   </div>
                   {profile.bio ? (
-                    <p className="text-sm text-zinc-400 leading-relaxed">{profile.bio}</p>
+                    <p className="text-sm text-slate-500 leading-relaxed">{profile.bio}</p>
                   ) : isOwn ? (
-                    <p className="text-sm text-zinc-600 italic">Add a bio to introduce yourself</p>
+                    <p className="text-sm text-slate-400 italic">Tambahkan bio untuk memperkenalkan dirimu</p>
                   ) : null}
                 </>
               )}
@@ -181,39 +162,39 @@ export default function Profile() {
           </div>
 
           {/* Stats */}
-          <div className="mt-5 pt-4 border-t border-zinc-800 grid grid-cols-3 gap-4">
+          <div className="mt-5 pt-4 border-t border-purple-100 grid grid-cols-3 gap-4">
             <div className="text-center">
-              <p className="text-lg font-bold text-zinc-100 tabular-nums">{posts.length}</p>
-              <p className="text-xs text-zinc-500 mt-0.5">Posts</p>
+              <p className="text-lg font-bold text-[#1E1B4B] tabular-nums">{posts.length}</p>
+              <p className="text-xs text-slate-400 mt-0.5">Post</p>
             </div>
             <div className="text-center">
-              <p className="text-lg font-bold text-orange-400 tabular-nums flex items-center justify-center gap-1">
+              <p className="text-lg font-bold text-amber-500 tabular-nums flex items-center justify-center gap-1">
                 <ArrowUp size={14} />
                 {totalUpvotes}
               </p>
-              <p className="text-xs text-zinc-500 mt-0.5">Upvotes</p>
+              <p className="text-xs text-slate-400 mt-0.5">Upvote</p>
             </div>
             <div className="text-center">
-              <p className="text-lg font-bold text-zinc-100 tabular-nums flex items-center justify-center gap-1">
+              <p className="text-lg font-bold text-[#1E1B4B] tabular-nums flex items-center justify-center gap-1">
                 <MousePointerClick size={14} />
                 {totalClicks}
               </p>
-              <p className="text-xs text-zinc-500 mt-0.5">Affiliate Clicks</p>
+              <p className="text-xs text-slate-400 mt-0.5">Klik Afiliasi</p>
             </div>
           </div>
         </div>
 
         {/* Posts */}
-        <h2 className="text-sm font-semibold text-zinc-400 mb-3 flex items-center gap-2">
+        <h2 className="text-sm font-semibold text-[#1E1B4B] mb-3 flex items-center gap-2">
           <MessageSquare size={14} />
-          {posts.length} {posts.length === 1 ? 'Post' : 'Posts'}
+          {posts.length} Post
         </h2>
 
         {posts.length === 0 ? (
           <div className="card p-12 text-center">
-            <p className="text-sm text-zinc-500">No posts yet.</p>
+            <p className="text-sm text-slate-400">Belum ada post.</p>
             {isOwn && (
-              <Link to="/submit" className="btn-primary inline-flex mt-4">Submit your first post</Link>
+              <Link to="/submit" className="btn-primary inline-flex mt-4">Submit post pertamamu</Link>
             )}
           </div>
         ) : (

@@ -4,9 +4,9 @@ import { CheckCircle, XCircle, Info, X } from 'lucide-react'
 const ToastContext = createContext(null)
 
 const ICONS = {
-  success: <CheckCircle size={15} className="text-emerald-400 shrink-0" />,
-  error:   <XCircle size={15} className="text-red-400 shrink-0" />,
-  info:    <Info size={15} className="text-blue-400 shrink-0" />,
+  success: <CheckCircle size={15} className="text-emerald-500 shrink-0" />,
+  error:   <XCircle size={15} className="text-red-500 shrink-0" />,
+  info:    <Info size={15} className="text-[#3C3489] shrink-0" />,
 }
 
 function ToastList({ toasts, onDismiss }) {
@@ -16,11 +16,11 @@ function ToastList({ toasts, onDismiss }) {
       {toasts.map(t => (
         <div
           key={t.id}
-          className="pointer-events-auto flex items-center gap-2.5 bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-3 shadow-xl text-sm text-zinc-100 animate-in slide-in-from-right-4 min-w-[200px] max-w-xs"
+          className="pointer-events-auto flex items-center gap-2.5 bg-white border border-purple-100 rounded-xl px-4 py-3 shadow-xl text-sm text-[#1E1B4B] min-w-[200px] max-w-xs"
         >
           {ICONS[t.type]}
           <span className="flex-1">{t.message}</span>
-          <button onClick={() => onDismiss(t.id)} className="text-zinc-500 hover:text-zinc-300 transition-colors">
+          <button onClick={() => onDismiss(t.id)} className="text-slate-400 hover:text-slate-600 transition-colors">
             <X size={13} />
           </button>
         </div>

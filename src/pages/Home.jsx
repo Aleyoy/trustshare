@@ -8,8 +8,8 @@ import CategoryFilter from '../components/CategoryFilter'
 import { usePosts } from '../hooks/usePosts'
 
 const SORT_OPTIONS = [
-  { id: 'top', label: 'Top' },
-  { id: 'new', label: 'New' },
+  { id: 'top', label: 'Teratas' },
+  { id: 'new', label: 'Terbaru' },
 ]
 
 export default function Home() {
@@ -18,7 +18,7 @@ export default function Home() {
   const [searchParams] = useSearchParams()
   const searchQuery = searchParams.get('search') || ''
 
-  const { posts, loading, error, newCount, upvotePost, trackClick, reload } = usePosts(category)
+  const { posts, loading, error, newCount, upvotePost, trackClick, deletePost, reload } = usePosts(category)
 
   const filtered = useMemo(() => {
     let result = posts
@@ -41,28 +41,21 @@ export default function Home() {
   return (
     <>
       <Helmet>
-        <title>TrustShare — Community Affiliate Reviews</title>
-        <meta name="description" content="Community-curated affiliate product reviews. Vote on the best deals, discover trusted recommendations." />
-        <meta property="og:title" content="TrustShare — Community Affiliate Reviews" />
-        <meta property="og:description" content="Community-curated affiliate product reviews. Vote on the best deals, discover trusted recommendations." />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://trustshare-gray.vercel.app" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="TrustShare — Community Affiliate Reviews" />
-        <meta name="twitter:description" content="Community-curated affiliate product reviews. Vote on the best deals." />
+        <title>TrustShare — Review Afiliasi Terpercaya</title>
+        <meta name="description" content="Review produk afiliasi terpercaya dari komunitas Indonesia." />
       </Helmet>
 
       <div className="max-w-3xl mx-auto px-4 py-6">
         <CategoryFilter active={category} onChange={setCategory} />
 
         <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-1 bg-zinc-900 border border-zinc-800 rounded-md p-1">
+          <div className="flex items-center gap-1 bg-white border border-purple-100 rounded-lg p-1 shadow-sm">
             {SORT_OPTIONS.map(opt => (
               <button
                 key={opt.id}
                 onClick={() => setSort(opt.id)}
-                className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                  sort === opt.id ? 'bg-zinc-700 text-zinc-100' : 'text-zinc-400 hover:text-zinc-200'
+                className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                  sort === opt.id ? 'bg-[#3C3489] text-white' : 'text-slate-500 hover:text-[#3C3489]'
                 }`}
               >
                 {opt.label}
@@ -77,7 +70,7 @@ export default function Home() {
             </button>
             <Link to="/submit" className="btn-primary flex items-center gap-1.5">
               <PlusCircle size={13} />
-              New Post
+              Post Baru
             </Link>
           </div>
         </div>
@@ -85,24 +78,24 @@ export default function Home() {
         {newCount > 0 && (
           <button
             onClick={reload}
-            className="w-full mb-4 flex items-center justify-center gap-2 bg-orange-500/10 border border-orange-500/30 text-orange-400 text-sm font-medium rounded-lg py-2.5 hover:bg-orange-500/20 transition-colors"
+            className="w-full mb-4 flex items-center justify-center gap-2 bg-amber-50 border border-amber-200 text-amber-700 text-sm font-medium rounded-xl py-2.5 hover:bg-amber-100 transition-colors"
           >
             <Sparkles size={14} />
-            {newCount} new {newCount === 1 ? 'post' : 'posts'} — click to refresh
+            {newCount} post baru — klik untuk refresh
           </button>
         )}
 
         {searchQuery && (
-          <p className="text-sm text-zinc-400 mb-4">
-            Results for <span className="text-zinc-200">"{searchQuery}"</span>
+          <p className="text-sm text-slate-500 mb-4">
+            Hasil untuk <span className="text-[#1E1B4B] font-medium">"{searchQuery}"</span>
           </p>
         )}
 
         {error && (
-          <div className="card p-4 flex items-center gap-3 text-sm text-red-400 border-red-900/50 mb-4">
+          <div className="card p-4 flex items-center gap-3 text-sm text-red-500 mb-4">
             <AlertCircle size={16} />
             {error}
-            <button onClick={reload} className="ml-auto btn-ghost text-xs">Retry</button>
+            <button onClick={reload} className="ml-auto btn-ghost text-xs">Coba lagi</button>
           </div>
         )}
 
@@ -110,13 +103,13 @@ export default function Home() {
           <FeedSkeleton />
         ) : filtered.length === 0 ? (
           <div className="card p-16 text-center">
-            <p className="text-zinc-400 text-sm">No posts yet in this category.</p>
-            <Link to="/submit" className="btn-primary inline-flex mt-4">Be the first to post</Link>
+            <p className="text-slate-400 text-sm">Belum ada post di kategori ini.</p>
+            <Link to="/submit" className="btn-primary inline-flex mt-4">Jadilah yang pertama</Link>
           </div>
         ) : (
           <div className="space-y-3">
             {filtered.map(post => (
-              <PostCard key={post.id} post={post} onUpvote={upvotePost} onClickAffiliate={trackClick} />
+              <PostCard key={post.id} post={post} onUpvote={upvotePost} onClickAffiliate={trackClick} onDelete={deletePost} />
             ))}
           </div>
         )}

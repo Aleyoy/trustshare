@@ -75,6 +75,9 @@ export async function createPost(data) {
       description: data.description,
       video_url: data.video_url || null,
       affiliate_link: data.affiliate_link || null,
+      shopee_link: data.shopee_link || null,
+      tokopedia_link: data.tokopedia_link || null,
+      lazada_link: data.lazada_link || null,
       category: data.category || 'general',
       user_id: user?.id ?? null,
     })
@@ -83,6 +86,14 @@ export async function createPost(data) {
 
   if (error) throw error
   return post
+}
+
+export async function deletePost(postId) {
+  const { error } = await supabase
+    .from('posts')
+    .delete()
+    .eq('id', postId)
+  if (error) throw error
 }
 
 export async function fetchComments(postId) {

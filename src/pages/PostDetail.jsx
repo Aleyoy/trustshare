@@ -107,9 +107,9 @@ export default function PostDetail() {
       </Helmet>
 
       <div className="max-w-3xl mx-auto px-4 py-6">
-        <Link to="/" className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-zinc-100 transition-colors mb-6">
+        <Link to="/" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-[#3C3489] transition-colors mb-6">
           <ArrowLeft size={14} />
-          Back to feed
+          Kembali ke feed
         </Link>
 
         <article className="card p-6 mb-6">
@@ -121,9 +121,9 @@ export default function PostDetail() {
                 onClick={() => upvotePost(post.id)}
                 aria-label="Upvote"
               >
-                <ArrowUp size={20} className={post.user_voted ? 'text-orange-400' : 'group-hover:text-orange-400 transition-colors'} />
+                <ArrowUp size={20} className={post.user_voted ? 'text-amber-500' : 'group-hover:text-amber-500 transition-colors text-slate-400'} />
               </button>
-              <span className={`text-base font-bold tabular-nums ${post.user_voted ? 'text-orange-400' : 'text-zinc-300'}`}>
+              <span className={`text-base font-bold tabular-nums ${post.user_voted ? 'text-amber-500' : 'text-slate-600'}`}>
                 {post.upvotes}
               </span>
             </div>
@@ -131,52 +131,49 @@ export default function PostDetail() {
             {/* Content */}
             <div className="flex-1 min-w-0">
               {category && category.id !== 'all' && (
-                <span className="inline-flex items-center gap-1 text-xs text-zinc-500 mb-2">
+                <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-purple-600 bg-purple-50 border border-purple-200 px-2 py-0.5 rounded-full mb-2">
                   {category.emoji} {category.label}
                 </span>
               )}
 
-              <h1 className="text-lg font-semibold text-zinc-100 leading-snug mb-1">{post.title}</h1>
+              <h1 className="text-lg font-semibold text-[#1E1B4B] leading-snug mb-1">{post.title}</h1>
 
               {post.author && (
                 <Link
                   to={`/profile/${post.author.id}`}
-                  className="inline-flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-300 transition-colors mb-3"
+                  className="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-[#3C3489] transition-colors mb-3"
                 >
-                  by {post.author.username ?? 'anon'}
-                  {post.author.is_verified && <BadgeCheck size={11} className="text-orange-400" />}
+                  oleh {post.author.username ?? 'anon'}
+                  {post.author.is_verified && <BadgeCheck size={11} className="text-amber-500" />}
                 </Link>
               )}
 
               {post.video_url && <VideoEmbed url={post.video_url} />}
 
-              <p className="text-sm text-zinc-300 leading-relaxed mb-4">{post.description}</p>
+              <p className="text-sm text-slate-600 leading-relaxed mb-4">{post.description}</p>
 
               <div className="flex items-center gap-3 flex-wrap">
-                {post.affiliate_link && (
-                  <a
-                    href={post.affiliate_link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => trackClick(post.id)}
-                    className="btn-primary inline-flex items-center gap-2"
-                  >
-                    <ExternalLink size={13} />
-                    Affiliate Link
+                {[
+                  { key: 'shopee_link', label: 'Shopee', cls: 'badge-shopee' },
+                  { key: 'tokopedia_link', label: 'Tokopedia', cls: 'badge-tokopedia' },
+                  { key: 'lazada_link', label: 'Lazada', cls: 'badge-lazada' },
+                  { key: 'affiliate_link', label: 'Affiliate Link', cls: 'btn-primary inline-flex items-center gap-1.5 text-xs px-3 py-1.5' },
+                ].filter(l => post[l.key]).map(l => (
+                  <a key={l.key} href={post[l.key]} target="_blank" rel="noopener noreferrer"
+                    onClick={() => trackClick(post.id)} className={l.cls}>
+                    <ExternalLink size={10} />
+                    {l.label}
                   </a>
-                )}
+                ))}
 
                 {post.clicks > 0 && (
-                  <span className="flex items-center gap-1.5 text-xs text-zinc-500">
+                  <span className="flex items-center gap-1.5 text-xs text-slate-400">
                     <MousePointerClick size={13} />
-                    {post.clicks} {post.clicks === 1 ? 'click' : 'clicks'}
+                    {post.clicks} klik
                   </span>
                 )}
 
-                <span
-                  className="text-xs text-zinc-500 ml-auto"
-                  title={new Date(post.created_at).toLocaleString()}
-                >
+                <span className="text-xs text-slate-400 ml-auto" title={new Date(post.created_at).toLocaleString()}>
                   {timeAgo(post.created_at)}
                 </span>
               </div>
@@ -186,31 +183,28 @@ export default function PostDetail() {
 
         {/* Comments */}
         <section>
-          <h2 className="flex items-center gap-2 text-sm font-semibold text-zinc-300 mb-4">
+          <h2 className="flex items-center gap-2 text-sm font-semibold text-[#1E1B4B] mb-4">
             <MessageSquare size={14} />
-            {comments.length} {comments.length === 1 ? 'Comment' : 'Comments'}
+            {comments.length} Komentar
           </h2>
 
           <form onSubmit={handleComment} className="card p-4 mb-4">
             <textarea
               value={commentText}
               onChange={e => setCommentText(e.target.value)}
-              placeholder="Share your experience or ask a question..."
+              placeholder="Bagikan pengalamanmu atau tanya sesuatu..."
               rows={3}
-              className="w-full bg-zinc-950 border border-zinc-800 rounded-md px-3 py-2 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-zinc-600 resize-none transition-colors"
+              className="input resize-none"
             />
             {commentError && (
-              <p className="mt-1 text-xs text-red-400 flex items-center gap-1">
+              <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
                 <AlertCircle size={11} /> {commentError}
               </p>
             )}
             <div className="mt-2 flex justify-end">
-              <button
-                type="submit"
-                className="btn-primary disabled:opacity-40 disabled:cursor-not-allowed"
-                disabled={!commentText.trim() || submitting}
-              >
-                {submitting ? 'Posting…' : 'Comment'}
+              <button type="submit" className="btn-primary disabled:opacity-40 disabled:cursor-not-allowed"
+                disabled={!commentText.trim() || submitting}>
+                {submitting ? 'Mengirim…' : 'Komentar'}
               </button>
             </div>
           </form>
@@ -219,22 +213,20 @@ export default function PostDetail() {
             <div className="space-y-3">
               {[1, 2].map(i => (
                 <div key={i} className="card p-4 animate-pulse space-y-2">
-                  <div className="h-3 bg-zinc-800 rounded w-1/4" />
-                  <div className="h-3 bg-zinc-800 rounded w-full" />
-                  <div className="h-3 bg-zinc-800 rounded w-3/4" />
+                  <div className="h-3 bg-purple-100 rounded w-1/4" />
+                  <div className="h-3 bg-purple-100 rounded w-full" />
+                  <div className="h-3 bg-purple-100 rounded w-3/4" />
                 </div>
               ))}
             </div>
           ) : comments.length === 0 ? (
-            <p className="text-center text-sm text-zinc-500 py-8">No comments yet. Start the conversation.</p>
+            <p className="text-center text-sm text-slate-400 py-8">Belum ada komentar. Mulai percakapan.</p>
           ) : (
             <div className="space-y-3">
               {comments.map(c => (
                 <div key={c.id} className="card p-4">
-                  <p className="text-xs text-zinc-500 mb-2">
-                    {new Date(c.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                  </p>
-                  <p className="text-sm text-zinc-300 leading-relaxed">{c.content}</p>
+                  <p className="text-xs text-slate-400 mb-2">{timeAgo(c.created_at)}</p>
+                  <p className="text-sm text-slate-700 leading-relaxed">{c.content}</p>
                 </div>
               ))}
             </div>

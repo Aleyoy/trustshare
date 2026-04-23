@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { fetchTopPosts, toggleUpvote, trackClick as dbTrackClick, createPost as dbCreatePost } from '../lib/db'
+import { fetchTopPosts, toggleUpvote, trackClick as dbTrackClick, createPost as dbCreatePost, deletePost as dbDeletePost } from '../lib/db'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
@@ -82,5 +82,16 @@ export function usePosts(category = 'all') {
     return post
   }
 
-  return { posts, loading, error, newCount, upvotePost, trackClick, createPost, reload: load }
+  async function deletePost(postId) {
+    setPosts(prev => prev.filter(p => p.id !== postId))
+    try {
+      await dbDeletePost(postId)
+      addToast('Post dihapus', 'success')
+    } catch {
+      addToast('Gagal menghapus post', 'error')
+      load()
+    }
+  }
+
+  return { posts, loading, error, newCount, upvotePost, trackClick, createPost, deletePost, reload: load }
 }
