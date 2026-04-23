@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { ArrowLeft, BadgeCheck, MousePointerClick, ArrowUp, MessageSquare, Pencil, Check, X } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
-import { fetchProfile, fetchUserPosts, updateProfile } from '../lib/db'
+import { fetchProfile, fetchUserPosts, updateProfile, deletePost as dbDeletePost } from '../lib/db'
 import PostCard from '../components/PostCard'
 import { usePosts } from '../hooks/usePosts'
 
@@ -13,6 +13,18 @@ export default function Profile() {
   const { user } = useAuth()
   const { addToast } = useToast()
   const { upvotePost, trackClick } = usePosts()
+
+  async function handleDelete(postId) {
+    setPosts(prev => prev.filter(p => p.id !== postId))
+    try {
+      await dbDeletePost(postId)
+      addToast('Post dihapus', 'success')
+    } catch {
+      addToast('Gagal menghapus post', 'error')
+      // reload posts on failure
+      fetchUserPosts(userId).then(setPosts).catch(() => {})
+    }
+  }
 
   const [profile, setProfile] = useState(null)
   const [posts, setPosts] = useState([])
@@ -200,7 +212,7 @@ export default function Profile() {
         ) : (
           <div className="space-y-3">
             {posts.map(post => (
-              <PostCard key={post.id} post={post} onUpvote={upvotePost} onClickAffiliate={trackClick} />
+              <PostCard key={post.id} post={post} onUpvote={upvotePost} onClickAffiliate={trackClick} onDelete={handleDelete} />
             ))}
           </div>
         )}
