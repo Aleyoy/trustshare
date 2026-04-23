@@ -1,8 +1,10 @@
-import { ArrowUp, MessageSquare, ExternalLink, Play, MousePointerClick, BadgeCheck, Trash2 } from 'lucide-react'
+import { ArrowUp, MessageSquare, ExternalLink, Play, MousePointerClick, BadgeCheck, Trash2, ImageIcon } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { useState } from 'react'
 import { CATEGORIES } from '../data/categories'
 import { timeAgo } from '../lib/timeAgo'
 import { useAuth } from '../context/AuthContext'
+import MediaLightbox from './MediaLightbox'
 
 function PlatformLinks({ post, onClickAffiliate }) {
   const links = [
@@ -35,11 +37,15 @@ function PlatformLinks({ post, onClickAffiliate }) {
 
 export default function PostCard({ post, onUpvote, onClickAffiliate, onDelete }) {
   const { user } = useAuth()
+  const [lightbox, setLightbox] = useState(false)
   const hasVideo = Boolean(post.video_url)
+  const hasMedia = Boolean(post.media_url)
   const category = CATEGORIES.find(c => c.id === post.category)
   const isOwn = user?.id && post.user_id === user.id
 
   return (
+    <>
+    {lightbox && <MediaLightbox url={post.media_url} type={post.media_type} onClose={() => setLightbox(false)} />}
     <article className="card flex gap-0 overflow-hidden hover:shadow-md transition-shadow">
       {/* Vote column */}
       <div className="flex flex-col items-center gap-1.5 px-3 py-4 bg-purple-50 min-w-[56px]">
@@ -58,11 +64,31 @@ export default function PostCard({ post, onUpvote, onClickAffiliate, onDelete })
       {/* Content */}
       <div className="flex-1 p-4 min-w-0">
         <div className="flex items-start gap-3">
-          {hasVideo && (
+          {/* Media thumbnail — uploaded image/video takes priority over video link icon */}
+          {hasMedia ? (
+            <button
+              onClick={() => setLightbox(true)}
+              className="shrink-0 w-20 h-14 rounded-lg overflow-hidden border border-purple-200 relative group"
+            >
+              {post.media_type === 'image' ? (
+                <img src={post.media_url} alt="" className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full bg-purple-100 flex items-center justify-center">
+                  <Play size={18} className="text-purple-500" />
+                </div>
+              )}
+              <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                {post.media_type === 'image'
+                  ? <ImageIcon size={14} className="text-white" />
+                  : <Play size={14} className="text-white" />}
+              </div>
+            </button>
+          ) : hasVideo ? (
             <div className="shrink-0 w-20 h-14 rounded-lg bg-purple-100 flex items-center justify-center border border-purple-200">
               <Play size={16} className="text-purple-400" />
             </div>
-          )}
+          ) : null}
+
 
           <div className="flex-1 min-w-0">
             {category && category.id !== 'all' && (
@@ -118,5 +144,6 @@ export default function PostCard({ post, onUpvote, onClickAffiliate, onDelete })
         </div>
       </div>
     </article>
+    </>
   )
 }

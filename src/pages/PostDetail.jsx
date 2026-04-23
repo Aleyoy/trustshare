@@ -6,6 +6,7 @@ import { usePosts } from '../hooks/usePosts'
 import { useComments } from '../hooks/useComments'
 import { CATEGORIES } from '../data/categories'
 import { timeAgo } from '../lib/timeAgo'
+import MediaLightbox from '../components/MediaLightbox'
 
 function getYouTubeId(url) {
   try {
@@ -56,6 +57,7 @@ export default function PostDetail() {
   const [commentText, setCommentText] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [commentError, setCommentError] = useState(null)
+  const [lightbox, setLightbox] = useState(false)
 
   const post = posts.find(p => p.id === id)
   const category = post ? CATEGORIES.find(c => c.id === post.category) : null
@@ -106,6 +108,7 @@ export default function PostDetail() {
         <meta name="twitter:description" content={pageDesc} />
       </Helmet>
 
+      {lightbox && post.media_url && <MediaLightbox url={post.media_url} type={post.media_type} onClose={() => setLightbox(false)} />}
       <div className="max-w-3xl mx-auto px-4 py-6">
         <Link to="/" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-[#3C3489] transition-colors mb-6">
           <ArrowLeft size={14} />
@@ -146,6 +149,19 @@ export default function PostDetail() {
                   oleh {post.author.username ?? 'anon'}
                   {post.author.is_verified && <BadgeCheck size={11} className="text-amber-500" />}
                 </Link>
+              )}
+
+              {post.media_url && (
+                <div className="mb-4">
+                  {post.media_type === 'image' ? (
+                    <button onClick={() => setLightbox(true)} className="w-full rounded-xl overflow-hidden border border-purple-200 group relative">
+                      <img src={post.media_url} alt="" className="w-full max-h-80 object-cover" />
+                      <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </button>
+                  ) : (
+                    <video src={post.media_url} controls className="w-full rounded-xl border border-purple-200 max-h-80" />
+                  )}
+                </div>
               )}
 
               {post.video_url && <VideoEmbed url={post.video_url} />}

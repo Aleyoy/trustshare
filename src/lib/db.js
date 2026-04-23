@@ -66,6 +66,22 @@ export async function trackClick(postId) {
   supabase.rpc('track_click', { p_post_id: postId }).then()
 }
 
+export async function uploadPostMedia(file) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+  const ext = file.name.split('.').pop().toLowerCase()
+  const path = `${user.id}/${Date.now()}.${ext}`
+  const { error } = await supabase.storage
+    .from('post-media')
+    .upload(path, file, { cacheControl: '3600', upsert: false })
+  if (error) throw error
+  const { data } = supabase.storage.from('post-media').getPublicUrl(path)
+  return {
+    url: data.publicUrl,
+    type: file.type.startsWith('video') ? 'video' : 'image',
+  }
+}
+
 export async function createPost(data) {
   const { data: { user } } = await supabase.auth.getUser()
   const { data: post, error } = await supabase
@@ -80,6 +96,8 @@ export async function createPost(data) {
       lazada_link: data.lazada_link || null,
       category: data.category || 'general',
       user_id: user?.id ?? null,
+      media_url: data.media_url || null,
+      media_type: data.media_type || null,
     })
     .select()
     .single()
