@@ -6,6 +6,18 @@ import { timeAgo } from '../lib/timeAgo'
 import { useAuth } from '../context/AuthContext'
 import MediaLightbox from './MediaLightbox'
 
+function getYouTubeThumbnail(url) {
+  if (!url) return null
+  try {
+    const u = new URL(url)
+    let id = null
+    if (u.hostname.includes('youtu.be')) id = u.pathname.slice(1)
+    else if (u.hostname.includes('youtube.com')) id = u.searchParams.get('v')
+    if (id) return `https://img.youtube.com/vi/${id}/mqdefault.jpg`
+  } catch {}
+  return null
+}
+
 function PlatformLinks({ post, onClickAffiliate }) {
   const links = [
     { key: 'shopee_link', label: 'Shopee', cls: 'badge-shopee' },
@@ -38,8 +50,9 @@ function PlatformLinks({ post, onClickAffiliate }) {
 export default function PostCard({ post, onUpvote, onClickAffiliate, onDelete }) {
   const { user } = useAuth()
   const [lightbox, setLightbox] = useState(false)
-  const hasVideo = Boolean(post.video_url)
   const hasMedia = Boolean(post.media_url)
+  const ytThumbnail = getYouTubeThumbnail(post.video_url)
+  const hasVideo = Boolean(post.video_url)
   const category = CATEGORIES.find(c => c.id === post.category)
   const isOwn = user?.id && post.user_id === user.id
 
@@ -84,9 +97,18 @@ export default function PostCard({ post, onUpvote, onClickAffiliate, onDelete })
               </div>
             </button>
           ) : hasVideo ? (
-            <div className="shrink-0 w-20 h-14 rounded-lg bg-purple-100 flex items-center justify-center border border-purple-200">
-              <Play size={16} className="text-purple-400" />
-            </div>
+            <Link to={`/post/${post.id}`} className="shrink-0 w-20 h-14 rounded-lg overflow-hidden border border-purple-200 relative group block">
+              {ytThumbnail ? (
+                <img src={ytThumbnail} alt="" className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full bg-purple-100 flex items-center justify-center">
+                  <Play size={16} className="text-purple-400" />
+                </div>
+              )}
+              <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <Play size={14} className="text-white" />
+              </div>
+            </Link>
           ) : null}
 
 
